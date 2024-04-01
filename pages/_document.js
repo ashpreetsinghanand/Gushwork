@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from 'next/document'
-import { GoogleOAuthProvider } from '@react-oauth/google';
 export default function Document() {
   return (
     <Html lang="en">
