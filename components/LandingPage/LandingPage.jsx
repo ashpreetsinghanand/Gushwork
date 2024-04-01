@@ -11,7 +11,8 @@ function LandingPage() {
       localStorage.setItem('isAuthenticated', true);
       const decoded = jwtDecode(user.credential)
       localStorage.setItem('credentials',decoded);
-      console.log('Login successful:', decoded);
+      //Here gpt
+      console.log('Login successful:', decoded.email);
       // Redirect user to dashboard
       router.push('/dashboard');
     };
