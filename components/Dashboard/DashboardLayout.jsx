@@ -36,7 +36,7 @@ const DashboardLayout = ({  children, headerText }) => {
           {/* content div */}
           {/* <div className="flex-1"> */}
             <div className="flex-1 flex-col center-section gap-5 ">
-              {headerText !=='EventInfo' && (<div> <BodyHeading text={headerText} /></div>)}
+              {/* {headerText !=='EventInfo' && (<div> <BodyHeading text={headerText} /></div>)} */}
               {children}
             </div>
           {/* </div> */}

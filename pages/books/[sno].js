@@ -8,18 +8,18 @@ function Book() {
   const { sno } = router.query;
   const [bookDetails, setBookDetails] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState('');
+  const [reviewText, setReviewText] = useState('');
 
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
         const response = await fetch(`/api/books/${sno}`);
-       
         if (!response.ok) {
           throw new Error('Failed to fetch book details');
         }
         const data = await response.json();
         setBookDetails(data[0]);
-        console.log(data[0],"123")
       } catch (error) {
         console.error(error);
       }
@@ -28,13 +28,11 @@ function Book() {
     const fetchReviews = async () => {
       try {
         const response = await fetch(`/api/books/${sno}/reviews`);
-       
         if (!response.ok) {
           throw new Error('Failed to fetch reviews');
         }
         const data = await response.json();
         setReviews(data);
-        console.log(data, "Reviews");
       } catch (error) {
         console.error(error);
       }
@@ -46,43 +44,112 @@ function Book() {
     }
   }, [sno]);
 
+  const userId = localStorage.getItem('userId');
+
+  const handleRatingChange = (event) => {
+    setRating(event.target.value);
+  };
+
+  const handleReviewTextChange = (event) => {
+    setReviewText(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(`/api/books/${sno}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          book_id:sno,
+          user_id:userId,
+          rating_star: rating,
+          review: reviewText,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+      // Refresh reviews after successful submission
+      const updatedReviews = await response.json();
+      setReviews(updatedReviews);
+      // Clear rating and review text fields
+      setRating('');
+      setReviewText('');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <DashboardLayout  headerText={sno}>
-      <div className='mx-20 '>
+    <DashboardLayout headerText={sno}>
+      <div className='m-10 '>
         {bookDetails ? (
           <div className='flex-col gap-y-5'>
-          <div className='flex gap-x-5 '>
-          <div className=''>
-            <img className='h-48' src={bookDetails.image} alt={bookDetails.title} />
-          </div>
-          
-            <div className='flex-col gap-y-5'>
-
-            <div className='flex  gap-x-3'>
-            <h2 className='text-xl font-[500]'>Title </h2>
-              <p className='text-md pr-5'>{bookDetails.title} </p> 
+            <div className='flex gap-x-5 '>
+              <div className=''>
+                <img className='h-48' src={bookDetails.image} alt={bookDetails.title} />
+              </div>
+              <div className='flex-col gap-y-5'>
+                <div className='flex  gap-x-3'>
+                  <h2 className='text-xl font-[500]'>Title </h2>
+                  <p className='text-md pr-5'>{bookDetails.title} </p>
+                </div>
+                <div className='flex gap-x-3'>
+                  <h2 className='text-xl font-[500]'>Author </h2>
+                  <p className='text-md pr-5'>{bookDetails.author} </p>
+                </div>
+                <div className='flex gap-x-3'>
+                  <h2 className='text-xl font-[500]'>Rating </h2>
+                  <p className='text-md pr-5'>{bookDetails.rating} </p>
+                </div>
+                <div className='flex gap-x-3'>
+                  <h2 className='text-xl font-[500]'>Genre </h2>
+                  <p className='text-md pr-5'>{bookDetails.genre} </p>
+                </div>
+              </div>
+              <div class='bg-white shadow-md rounded-xl p-6'>
+                <div class='mb-4'>
+                  <label class='block text-gray-700 font-bold mb-2' htmlFor='rating'>
+                    Enter Rating
+                  </label>
+                  <input
+                    placeholder='1-10'
+                    class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                    id='rating'
+                    type='number'
+                    min='1'
+                    max='10'
+                    value={rating}
+                    onChange={handleRatingChange}
+                  />
+                </div>
+                <div class='mb-6'>
+                  <label class='block text-gray-700 font-bold mb-2' htmlFor='review'>
+                    Review
+                  </label>
+                  <input
+                    placeholder='lovely'
+                    class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
+                    id='review'
+                    type='text'
+                    value={reviewText}
+                    onChange={handleReviewTextChange}
+                  />
+                </div>
+                <div class='flex items-center justify-center'>
+                  <button
+                    onClick={handleSubmit}
+                    class='bg-[#785cfa] w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                    type='button'>
+                    Submit
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className='flex gap-x-3'>
-            <h2 className='text-xl font-[500]'>Author </h2>
-              <p className='text-md pr-5'>{bookDetails.author} </p> 
-            </div>
-            <div className='flex gap-x-3'>
-            <h2 className='text-xl font-[500]'>Rating </h2>
-              <p className='text-md pr-5'>{bookDetails.rating} </p> 
-            </div>
-            <div className='flex gap-x-3'>
-            <h2 className='text-xl font-[500]'>Genre </h2>
-              <p className='text-md pr-5'>{bookDetails.genre} </p> 
-            </div>
-           <button>Add Rating</button>
-           <button>Give review</button>
-            </div>
-          </div>
-            <p className='text-3xl my-5'>Description
-             </p>
-            <p className='text-xl pr-5'>
-            {bookDetails.description}
-            </p> 
+            <p className='text-3xl my-5'>Description</p>
+            <p className='text-xl pr-5'>{bookDetails.description}</p>
             <div>
               <h2 className='text-3xl mt-8'>Review Section</h2>
               <table className='border-collapse w-full mt-4'>

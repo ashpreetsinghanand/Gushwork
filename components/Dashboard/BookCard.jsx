@@ -9,7 +9,7 @@ const BookCard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`/api/books?page=${page}`);
+      const response = await fetch(`/api/books?page=${page}&limit=8`);
       const data = await response.json();
       setBooks(data);
       setHasMore(data.length > 0);
@@ -21,8 +21,8 @@ const BookCard = () => {
     router.push(`/books/${bookId}`);
   };
   return (
-    <div>
-
+    <div className='my-16'>
+        
 
     <div className="flex flex-wrap justify-center gap-5">
       {books.map((book) => (
@@ -33,19 +33,19 @@ const BookCard = () => {
             </div>
             <div className="flex-col justify-between">
               <div className="text-md font-[500]">{book.title}</div>
-              <div className=" p-2 rounded-3xl text-right text-sm">By - {book.author}</div>
+              <div className=" p-2 rounded-3xl text-center text-sm">By - {book.author}</div>
             </div>
           </div>
-          <button className='w-full bg-blue-400 rounded-br-xl text-white rounded-bl-xl'>FAV</button>
+          {/* <button className='w-full bg-blue-400 rounded-br-xl text-white rounded-bl-xl'>FAV</button> */}
         </div>
       ))}
     </div>
 
       <div className="flex justify-center mt-5">
-        <button disabled={page === 1} onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))} className="mr-2 bg-blue-400 px-3 py-1 text-white rounded">Previous</button>
-        <span>Page {page}</span>
+        <button disabled={page === 1} onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))} className="mr-2 bg-blue-400 px-3 py-1 text-white rounded">Prev</button>
+        <span> {page}</span>
         
-          <button disabled={!hasMore} onClick={() => setPage((prevPage) => prevPage + 1)} className="bg-blue-400 px-3 py-1 text-white rounded">Next</button>
+          <button disabled={!hasMore} onClick={() => setPage((prevPage) => prevPage + 1)} className="bg-blue-400 px-3 py-1 ml-2 text-white rounded">Next</button>
     
       </div>
     </div>
